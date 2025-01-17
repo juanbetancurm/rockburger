@@ -1,0 +1,159 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > CategoryModel</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.rockburger.arquetipo2024.domain.model</a>
+</div>
+
+<h1>Coverage Summary for Class: CategoryModel (com.rockburger.arquetipo2024.domain.model)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">CategoryModel</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    42,9%
+  </span>
+  <span class="absValue">
+    (3/7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    55,6%
+  </span>
+  <span class="absValue">
+    (10/18)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.rockburger.arquetipo2024.domain.model;
+&nbsp;import com.rockburger.arquetipo2024.domain.exception.EmptyFieldException;
+&nbsp;import com.rockburger.arquetipo2024.domain.util.DomainConstants;
+&nbsp;
+&nbsp;
+&nbsp;public class CategoryModel {
+&nbsp;
+&nbsp;    private Long id;
+&nbsp;    private String name;
+&nbsp;    private String description;
+&nbsp;
+<b class="fc">&nbsp;    public CategoryModel(Long id, String name, String description) {</b>
+<b class="fc">&nbsp;        if (name == null || name.trim().isEmpty()) {</b>
+<b class="nc">&nbsp;            throw new EmptyFieldException(DomainConstants.Field.NAME.toString());</b>
+&nbsp;        }
+<b class="fc">&nbsp;        if (name.trim().length() &gt; 50) {</b>
+<b class="nc">&nbsp;            throw new IllegalArgumentException(&quot;Name cannot exceed 50 characters&quot;);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        if (description == null || description.trim().isEmpty()) {</b>
+<b class="nc">&nbsp;            throw new EmptyFieldException(DomainConstants.Field.DESCRIPTION.toString());</b>
+&nbsp;        }
+<b class="fc">&nbsp;        if (description.trim().length() &gt; 90) {</b>
+<b class="nc">&nbsp;            throw new IllegalArgumentException(&quot;Description cannot exceed 90 characters&quot;);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        this.id = id;</b>
+<b class="fc">&nbsp;        this.name = name.trim();</b>
+<b class="fc">&nbsp;        this.description = description.trim();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Long getId() {
+<b class="fc">&nbsp;        return id;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setId(Long id) {
+<b class="nc">&nbsp;        this.id = id;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public String getName() {
+<b class="fc">&nbsp;        return name;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setName(String name) {
+<b class="nc">&nbsp;        this.name = name;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public String getDescription() {
+<b class="nc">&nbsp;        return description;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setDescription(String description) {
+<b class="nc">&nbsp;        this.description = description;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-08-25 22:22</div>
+</div>
+</body>
+</html>

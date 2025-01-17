@@ -1,0 +1,157 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > CategoryUseCase</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.rockburger.arquetipo2024.domain.api.usecase</a>
+</div>
+
+<h1>Coverage Summary for Class: CategoryUseCase (com.rockburger.arquetipo2024.domain.api.usecase)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">CategoryUseCase</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    28,6%
+  </span>
+  <span class="absValue">
+    (2/7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    46,7%
+  </span>
+  <span class="absValue">
+    (7/15)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.rockburger.arquetipo2024.domain.api.usecase;
+&nbsp;
+&nbsp;import com.rockburger.arquetipo2024.adapters.driven.jpa.mysql.entity.CategoryEntity;
+&nbsp;import com.rockburger.arquetipo2024.adapters.driven.jpa.mysql.mapper.ICategoryEntityMapper;
+&nbsp;import com.rockburger.arquetipo2024.domain.api.ICategoryServicePort;
+&nbsp;import com.rockburger.arquetipo2024.domain.exception.CategoryAlreadyExistExceptionDD;
+&nbsp;import com.rockburger.arquetipo2024.domain.model.CategoryModel;
+&nbsp;import com.rockburger.arquetipo2024.domain.spi.ICategoryPersistencePort;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Optional;
+&nbsp;
+&nbsp;
+&nbsp;public class CategoryUseCase implements ICategoryServicePort {
+&nbsp;    private final ICategoryPersistencePort categoryPersistencePort;
+&nbsp;    private final ICategoryEntityMapper categoryEntityMapper;
+&nbsp;
+<b class="fc">&nbsp;    public CategoryUseCase(ICategoryPersistencePort categoryPersistencePort, ICategoryEntityMapper categoryEntityMapper){</b>
+<b class="fc">&nbsp;        this.categoryPersistencePort = categoryPersistencePort;</b>
+<b class="fc">&nbsp;        this.categoryEntityMapper = categoryEntityMapper;</b>
+&nbsp;    }
+&nbsp;    @Override
+&nbsp;    public CategoryModel createCategory (CategoryModel categoryModel){
+<b class="fc">&nbsp;        Optional&lt;CategoryModel&gt; existingCategory = categoryPersistencePort.getCategoryByName(categoryModel.getName());</b>
+<b class="fc">&nbsp;        if (existingCategory.isPresent()) {</b>
+<b class="fc">&nbsp;            throw new CategoryAlreadyExistExceptionDD(categoryModel.getName());</b>
+<b class="fc">&nbsp;        }return categoryPersistencePort.createCategory(categoryModel);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public List&lt;CategoryModel&gt; getCategoriesWithPagination(int page, int size, String sortBy, boolean asc){
+<b class="nc">&nbsp;        return categoryPersistencePort.getCategoriesWithPagination(page, size, sortBy, asc);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public List&lt;CategoryModel&gt; getAllCategories(){
+<b class="nc">&nbsp;        List&lt;CategoryEntity&gt; categories = categoryPersistencePort.getAllCategories();</b>
+&nbsp;
+<b class="nc">&nbsp;        return categories.stream()</b>
+<b class="nc">&nbsp;                .map(categoryEntityMapper::toModel)</b>
+<b class="nc">&nbsp;                .toList();</b>
+&nbsp;    }
+&nbsp;    @Override
+&nbsp;    public CategoryModel getCategoryById(Long id){
+<b class="nc">&nbsp;        return categoryPersistencePort.getCategoryById(id);</b>
+&nbsp;    }
+&nbsp;    public CategoryModel updateCategory(CategoryModel categoryModel){
+<b class="nc">&nbsp;        return categoryPersistencePort.updateCategory(categoryModel);</b>
+&nbsp;    }
+&nbsp;    @Override
+&nbsp;    public void deleteCategory(Long id){
+<b class="nc">&nbsp;        categoryPersistencePort.deleteCategory(id);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-08-25 22:22</div>
+</div>
+</body>
+</html>

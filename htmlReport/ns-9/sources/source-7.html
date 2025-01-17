@@ -1,0 +1,81 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > ISupplierResponseMapper</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.rockburger.arquetipo2024.adapters.driving.http.mapper</a>
+</div>
+
+<h1>Coverage Summary for Class: ISupplierResponseMapper (com.rockburger.arquetipo2024.adapters.driving.http.mapper)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">ISupplierResponseMapper</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.rockburger.arquetipo2024.adapters.driving.http.mapper;
+&nbsp;
+&nbsp;import com.rockburger.arquetipo2024.adapters.driving.http.dto.response.SupplierResponse;
+&nbsp;import com.rockburger.arquetipo2024.domain.model.Supplier;
+&nbsp;import org.mapstruct.Mapper;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;@Mapper(componentModel = &quot;spring&quot;)
+&nbsp;public interface ISupplierResponseMapper {
+&nbsp;    SupplierResponse toSupplierResponse(Supplier supplier);
+&nbsp;    List&lt;SupplierResponse&gt; toSupplierResponseList(List&lt;Supplier&gt; suppliers);
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-08-25 22:22</div>
+</div>
+</body>
+</html>

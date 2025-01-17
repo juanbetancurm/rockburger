@@ -1,0 +1,154 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > ISupplierResponseMapperImpl</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.rockburger.arquetipo2024.adapters.driving.http.mapper</a>
+</div>
+
+<h1>Coverage Summary for Class: ISupplierResponseMapperImpl (com.rockburger.arquetipo2024.adapters.driving.http.mapper)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ISupplierResponseMapperImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    33,3%
+  </span>
+  <span class="absValue">
+    (1/3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    5,6%
+  </span>
+  <span class="absValue">
+    (1/18)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.rockburger.arquetipo2024.adapters.driving.http.mapper;
+&nbsp;
+&nbsp;import com.rockburger.arquetipo2024.adapters.driving.http.dto.response.SupplierResponse;
+&nbsp;import com.rockburger.arquetipo2024.domain.model.Supplier;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.List;
+&nbsp;import javax.annotation.processing.Generated;
+&nbsp;import org.springframework.stereotype.Component;
+&nbsp;
+&nbsp;@Generated(
+&nbsp;    value = &quot;org.mapstruct.ap.MappingProcessor&quot;,
+&nbsp;    date = &quot;2024-08-23T16:54:57-0500&quot;,
+&nbsp;    comments = &quot;version: 1.5.3.Final, compiler: IncrementalProcessingEnvironment from gradle-language-java-8.5.jar, environment: Java 17.0.6 (Oracle Corporation)&quot;
+&nbsp;)
+&nbsp;@Component
+<b class="fc">&nbsp;public class ISupplierResponseMapperImpl implements ISupplierResponseMapper {</b>
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public SupplierResponse toSupplierResponse(Supplier supplier) {
+<b class="nc">&nbsp;        if ( supplier == null ) {</b>
+<b class="nc">&nbsp;            return null;</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        Long id = null;</b>
+<b class="nc">&nbsp;        String name = null;</b>
+<b class="nc">&nbsp;        String contactNumber = null;</b>
+&nbsp;
+<b class="nc">&nbsp;        id = supplier.getId();</b>
+<b class="nc">&nbsp;        name = supplier.getName();</b>
+<b class="nc">&nbsp;        contactNumber = supplier.getContactNumber();</b>
+&nbsp;
+<b class="nc">&nbsp;        SupplierResponse supplierResponse = new SupplierResponse( id, name, contactNumber );</b>
+&nbsp;
+<b class="nc">&nbsp;        return supplierResponse;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public List&lt;SupplierResponse&gt; toSupplierResponseList(List&lt;Supplier&gt; suppliers) {
+<b class="nc">&nbsp;        if ( suppliers == null ) {</b>
+<b class="nc">&nbsp;            return null;</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        List&lt;SupplierResponse&gt; list = new ArrayList&lt;SupplierResponse&gt;( suppliers.size() );</b>
+<b class="nc">&nbsp;        for ( Supplier supplier : suppliers ) {</b>
+<b class="nc">&nbsp;            list.add( toSupplierResponse( supplier ) );</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;
+<b class="nc">&nbsp;        return list;</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-08-25 22:22</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,154 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > ProductUseCase</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.rockburger.arquetipo2024.domain.api.usecase</a>
+</div>
+
+<h1>Coverage Summary for Class: ProductUseCase (com.rockburger.arquetipo2024.domain.api.usecase)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ProductUseCase</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    12,5%
+  </span>
+  <span class="absValue">
+    (1/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    22,2%
+  </span>
+  <span class="absValue">
+    (2/9)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.rockburger.arquetipo2024.domain.api.usecase;
+&nbsp;
+&nbsp;import com.rockburger.arquetipo2024.domain.api.IProductServicePort;
+&nbsp;import com.rockburger.arquetipo2024.domain.model.Product;
+&nbsp;import com.rockburger.arquetipo2024.domain.spi.IProductPersistencePort;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;public class ProductUseCase implements IProductServicePort {
+&nbsp;    private IProductPersistencePort productPersistencePort;
+&nbsp;
+<b class="fc">&nbsp;    public ProductUseCase(IProductPersistencePort productPersistencePort) {</b>
+<b class="fc">&nbsp;        this.productPersistencePort = productPersistencePort;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public void saveProduct(Product product) {
+<b class="nc">&nbsp;        productPersistencePort.saveProduct(product);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public Product getProduct(String name) {
+<b class="nc">&nbsp;        return productPersistencePort.getProduct(name);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public List&lt;Product&gt; getAllProducts(Integer page, Integer size) {
+<b class="nc">&nbsp;        return productPersistencePort.getAllProducts(page, size);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public List&lt;Product&gt; getAllProductsBySupplier(String supplier, Integer page, Integer size) {
+<b class="nc">&nbsp;        return productPersistencePort.getAllProductsBySupplier(supplier, page, size);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public List&lt;Product&gt; getAllSoldOutProducts(Integer page, Integer size) {
+<b class="nc">&nbsp;        return productPersistencePort.getAllSoldOutProducts(page, size);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public Product updateProduct(Product product) {
+<b class="nc">&nbsp;        return productPersistencePort.updateProduct(product);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public void deleteProduct(Long id) {
+<b class="nc">&nbsp;        productPersistencePort.deleteProduct(id);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-08-25 22:22</div>
+</div>
+</body>
+</html>

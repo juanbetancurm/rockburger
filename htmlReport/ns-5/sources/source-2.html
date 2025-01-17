@@ -1,0 +1,212 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > IProductEntityMapperImpl</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.rockburger.arquetipo2024.adapters.driven.jpa.mysql.mapper</a>
+</div>
+
+<h1>Coverage Summary for Class: IProductEntityMapperImpl (com.rockburger.arquetipo2024.adapters.driven.jpa.mysql.mapper)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">IProductEntityMapperImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    16,7%
+  </span>
+  <span class="absValue">
+    (1/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    2%
+  </span>
+  <span class="absValue">
+    (1/49)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.rockburger.arquetipo2024.adapters.driven.jpa.mysql.mapper;
+&nbsp;
+&nbsp;import com.rockburger.arquetipo2024.adapters.driven.jpa.mysql.entity.ProductEntity;
+&nbsp;import com.rockburger.arquetipo2024.adapters.driven.jpa.mysql.entity.SupplierEntity;
+&nbsp;import com.rockburger.arquetipo2024.domain.model.Product;
+&nbsp;import com.rockburger.arquetipo2024.domain.model.Supplier;
+&nbsp;import java.math.BigDecimal;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.List;
+&nbsp;import javax.annotation.processing.Generated;
+&nbsp;import org.springframework.stereotype.Component;
+&nbsp;
+&nbsp;@Generated(
+&nbsp;    value = &quot;org.mapstruct.ap.MappingProcessor&quot;,
+&nbsp;    date = &quot;2024-08-23T16:54:58-0500&quot;,
+&nbsp;    comments = &quot;version: 1.5.3.Final, compiler: IncrementalProcessingEnvironment from gradle-language-java-8.5.jar, environment: Java 17.0.6 (Oracle Corporation)&quot;
+&nbsp;)
+&nbsp;@Component
+<b class="fc">&nbsp;public class IProductEntityMapperImpl implements IProductEntityMapper {</b>
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public Product toModel(ProductEntity productEntity) {
+<b class="nc">&nbsp;        if ( productEntity == null ) {</b>
+<b class="nc">&nbsp;            return null;</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        Supplier supplier = null;</b>
+<b class="nc">&nbsp;        long id = 0L;</b>
+<b class="nc">&nbsp;        String name = null;</b>
+<b class="nc">&nbsp;        BigDecimal price = null;</b>
+<b class="nc">&nbsp;        Long quantity = null;</b>
+&nbsp;
+<b class="nc">&nbsp;        supplier = supplierEntityToSupplier( productEntity.getSupplier() );</b>
+<b class="nc">&nbsp;        if ( productEntity.getId() != null ) {</b>
+<b class="nc">&nbsp;            id = productEntity.getId();</b>
+&nbsp;        }
+<b class="nc">&nbsp;        name = productEntity.getName();</b>
+<b class="nc">&nbsp;        price = productEntity.getPrice();</b>
+<b class="nc">&nbsp;        quantity = productEntity.getQuantity();</b>
+&nbsp;
+<b class="nc">&nbsp;        Product product = new Product( id, name, price, quantity, supplier );</b>
+&nbsp;
+<b class="nc">&nbsp;        return product;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public ProductEntity toEntity(Product product) {
+<b class="nc">&nbsp;        if ( product == null ) {</b>
+<b class="nc">&nbsp;            return null;</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        ProductEntity productEntity = new ProductEntity();</b>
+&nbsp;
+<b class="nc">&nbsp;        productEntity.setSupplier( supplierToSupplierEntity( product.getSupplier() ) );</b>
+<b class="nc">&nbsp;        productEntity.setId( product.getId() );</b>
+<b class="nc">&nbsp;        productEntity.setName( product.getName() );</b>
+<b class="nc">&nbsp;        productEntity.setPrice( product.getPrice() );</b>
+<b class="nc">&nbsp;        productEntity.setQuantity( product.getQuantity() );</b>
+&nbsp;
+<b class="nc">&nbsp;        return productEntity;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public List&lt;Product&gt; toModelList(List&lt;ProductEntity&gt; productEntities) {
+<b class="nc">&nbsp;        if ( productEntities == null ) {</b>
+<b class="nc">&nbsp;            return null;</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        List&lt;Product&gt; list = new ArrayList&lt;Product&gt;( productEntities.size() );</b>
+<b class="nc">&nbsp;        for ( ProductEntity productEntity : productEntities ) {</b>
+<b class="nc">&nbsp;            list.add( toModel( productEntity ) );</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;
+<b class="nc">&nbsp;        return list;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    protected Supplier supplierEntityToSupplier(SupplierEntity supplierEntity) {
+<b class="nc">&nbsp;        if ( supplierEntity == null ) {</b>
+<b class="nc">&nbsp;            return null;</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        Long id = null;</b>
+<b class="nc">&nbsp;        String name = null;</b>
+<b class="nc">&nbsp;        String contactNumber = null;</b>
+&nbsp;
+<b class="nc">&nbsp;        id = supplierEntity.getId();</b>
+<b class="nc">&nbsp;        name = supplierEntity.getName();</b>
+<b class="nc">&nbsp;        contactNumber = supplierEntity.getContactNumber();</b>
+&nbsp;
+<b class="nc">&nbsp;        Supplier supplier = new Supplier( id, name, contactNumber );</b>
+&nbsp;
+<b class="nc">&nbsp;        return supplier;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    protected SupplierEntity supplierToSupplierEntity(Supplier supplier) {
+<b class="nc">&nbsp;        if ( supplier == null ) {</b>
+<b class="nc">&nbsp;            return null;</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        SupplierEntity supplierEntity = new SupplierEntity();</b>
+&nbsp;
+<b class="nc">&nbsp;        supplierEntity.setId( supplier.getId() );</b>
+<b class="nc">&nbsp;        supplierEntity.setName( supplier.getName() );</b>
+<b class="nc">&nbsp;        supplierEntity.setContactNumber( supplier.getContactNumber() );</b>
+&nbsp;
+<b class="nc">&nbsp;        return supplierEntity;</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-08-25 22:22</div>
+</div>
+</body>
+</html>
