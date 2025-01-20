@@ -96,4 +96,20 @@ public class ControllerAdvisor {
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(InvalidAgeException.class)
+    public ResponseEntity<Map<String, String>> handleInvalidAgeException(InvalidAgeException ex) {
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put("error", "Invalid Age");
+        errorResponse.put("message", ex.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(DuplicateUserException.class)
+    public ResponseEntity<Map<String, String>> handleDuplicateUserException(DuplicateUserException ex) {
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put("error", "Duplicate User");
+        errorResponse.put("message", ex.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
+    }
+
 }

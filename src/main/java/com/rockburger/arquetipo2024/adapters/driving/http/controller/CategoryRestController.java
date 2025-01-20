@@ -36,7 +36,6 @@ public class CategoryRestController {
                                   ICategoryResponseMapper categoryResponseMapper,
                                   ICategoryRequestMapper categoryRequestMapper){
         this.categoryServicePort = categoryServicePort;
-
         this.categoryResponseMapper = categoryResponseMapper;
         this.categoryRequestMapper = categoryRequestMapper;
     }

@@ -5,16 +5,20 @@ import com.rockburger.arquetipo2024.adapters.driven.jpa.mysql.mapper.*;
 import com.rockburger.arquetipo2024.adapters.driven.jpa.mysql.repository.*;
 import com.rockburger.arquetipo2024.adapters.driving.http.dto.response.BrandResponse;
 import com.rockburger.arquetipo2024.adapters.driving.http.dto.response.CategoryResponse;
+import com.rockburger.arquetipo2024.adapters.driving.http.dto.response.UserResponse;
 import com.rockburger.arquetipo2024.adapters.driving.http.mapper.IBrandResponseMapper;
 import com.rockburger.arquetipo2024.adapters.driving.http.mapper.ICategoryResponseMapper;
+import com.rockburger.arquetipo2024.adapters.driving.http.mapper.IUserResponseMapper;
 import com.rockburger.arquetipo2024.domain.api.*;
 import com.rockburger.arquetipo2024.domain.api.usecase.*;
 import com.rockburger.arquetipo2024.domain.model.BrandModel;
 import com.rockburger.arquetipo2024.domain.model.CategoryModel;
+import com.rockburger.arquetipo2024.domain.model.UserModel;
 import com.rockburger.arquetipo2024.domain.spi.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 
 import java.util.List;
@@ -107,4 +111,48 @@ public class BeanConfiguration {
             }
         };
     }
+
+
+
+    @Bean
+    public BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+    @Bean
+    public IPasswordEncryptionPort passwordEncryptionPort(BCryptPasswordEncoder passwordEncoder) {
+        return new BCryptPasswordAdapter(passwordEncoder);
+    }
+
+    @Bean
+    public IUserServicePort userServicePort(
+            IUserPersistencePort userPersistencePort,
+            IPasswordEncryptionPort passwordEncryptionPort) {
+        return new UserUseCase(userPersistencePort, passwordEncryptionPort);
+    }
+
+    @Bean
+    public IUserPersistencePort userPersistencePort(
+            IUserRepository userRepository,
+            IUserEntityMapper userEntityMapper) {
+        return new UserAdapter(userRepository, userEntityMapper);
+    }
+    @Bean
+    public IUserResponseMapper userResponseMapper() {
+        return new IUserResponseMapper() {
+            @Override
+            public UserResponse toResponse(UserModel userModel) {
+                return new UserResponse(
+                        userModel.getId(),
+                        userModel.getFirstName(),
+                        userModel.getLastName(),
+                        userModel.getIdDocument(),
+                        userModel.getPhoneNumber(),
+                        userModel.getBirthDate(),
+                        userModel.getEmail(),
+                        userModel.getRole()
+                );
+            }
+        };
+    }
+
 }

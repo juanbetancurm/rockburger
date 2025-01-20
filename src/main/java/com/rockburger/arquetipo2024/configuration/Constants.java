@@ -18,4 +18,8 @@ public class Constants {
     public static final String NEGATIVE_NOT_ALLOWED_EXCEPTION_MESSAGE = "Field %s can not receive negative values";
 
     public static final String BLANK_FIELD_ERROR = "The field cannot be blank.";
+    public static final String INVALID_AGE_MESSAGE = "User must be at least 18 years old";
+    public static final String DUPLICATE_EMAIL_MESSAGE = "Email already exists";
+    public static final String DUPLICATE_ID_DOCUMENT_MESSAGE = "ID Document already exists";
+    public static final String INVALID_PHONE_FORMAT_MESSAGE = "Invalid phone number format";
 }
