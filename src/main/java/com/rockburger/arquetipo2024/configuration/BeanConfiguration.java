@@ -1,25 +1,29 @@
 package com.rockburger.arquetipo2024.configuration;
-
+import com.rockburger.arquetipo2024.adapters.driven.jpa.mysql.adapter.security.JwtAdapter;
 import com.rockburger.arquetipo2024.adapters.driven.jpa.mysql.adapter.*;
+import com.rockburger.arquetipo2024.adapters.driven.jpa.mysql.adapter.security.BCryptPasswordAdapter;
 import com.rockburger.arquetipo2024.adapters.driven.jpa.mysql.mapper.*;
 import com.rockburger.arquetipo2024.adapters.driven.jpa.mysql.repository.*;
 import com.rockburger.arquetipo2024.adapters.driving.http.dto.response.BrandResponse;
 import com.rockburger.arquetipo2024.adapters.driving.http.dto.response.CategoryResponse;
 import com.rockburger.arquetipo2024.adapters.driving.http.dto.response.UserResponse;
+import com.rockburger.arquetipo2024.adapters.driving.http.mapper.IAuthenticationResponseMapper;
 import com.rockburger.arquetipo2024.adapters.driving.http.mapper.IBrandResponseMapper;
 import com.rockburger.arquetipo2024.adapters.driving.http.mapper.ICategoryResponseMapper;
 import com.rockburger.arquetipo2024.adapters.driving.http.mapper.IUserResponseMapper;
+import com.rockburger.arquetipo2024.configuration.security.JwtKeyProvider;
 import com.rockburger.arquetipo2024.domain.api.*;
 import com.rockburger.arquetipo2024.domain.api.usecase.*;
 import com.rockburger.arquetipo2024.domain.model.BrandModel;
 import com.rockburger.arquetipo2024.domain.model.CategoryModel;
 import com.rockburger.arquetipo2024.domain.model.UserModel;
 import com.rockburger.arquetipo2024.domain.spi.*;
+import com.rockburger.arquetipo2024.domain.spi.IPasswordEncryptionPort;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-
+import com.rockburger.arquetipo2024.domain.api.IJwtServicePort;
 
 import java.util.List;
 
@@ -32,7 +36,10 @@ public class BeanConfiguration {
     private final ICategoryEntityMapper categoryEntityMapper;
     private final IBrandRepository brandRepository;
     private final IBrandEntityMapper brandEntityMapper;
-
+    private final IUserRepository userRepository;
+    private final IUserEntityMapper userEntityMapper;
+    private final IArticleRepository articleRepository;
+    private final IArticleEntityMapper articleEntityMapper;
 
     @Bean
     public IArticleServicePort articleServicePort(IArticlePersistencePort articlePersistencePort,
@@ -41,7 +48,10 @@ public class BeanConfiguration {
 
         return new ArticleUseCase(articlePersistencePort, categoryServicePort, brandServicePort);
     }
-
+    @Bean
+    public IArticlePersistencePort articlePersistencePort() {
+        return new ArticleAdapter(articleRepository, articleEntityMapper, brandRepository);
+    }
     @Bean
     public ICategoryPersistencePort categoryPersistencePort(){
         return new CategoryAdapter(categoryRepository, categoryEntityMapper);
@@ -50,7 +60,6 @@ public class BeanConfiguration {
     public ICategoryServicePort categoryServicePort(){
         return new CategoryUseCase(categoryPersistencePort());
     }
-
     @Bean
     public ICategoryResponseMapper categoryResponseMapper(){
         return new ICategoryResponseMapper() {
@@ -75,7 +84,6 @@ public class BeanConfiguration {
             }
         };
     }
-
     @Bean
     public IBrandPersistencePort brandPersistencePort(){
 
@@ -86,7 +94,6 @@ public class BeanConfiguration {
 
         return new BrandUseCase(brandPersistencePort());
     }
-
     @Bean
     public IBrandResponseMapper brandResponseMapper(){
         return new IBrandResponseMapper() {
@@ -112,24 +119,13 @@ public class BeanConfiguration {
         };
     }
 
-
-
-    @Bean
-    public BCryptPasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-    @Bean
-    public IPasswordEncryptionPort passwordEncryptionPort(BCryptPasswordEncoder passwordEncoder) {
-        return new BCryptPasswordAdapter(passwordEncoder);
-    }
-
+    /* UserCreation */
     @Bean
     public IUserServicePort userServicePort(
             IUserPersistencePort userPersistencePort,
             IPasswordEncryptionPort passwordEncryptionPort) {
         return new UserUseCase(userPersistencePort, passwordEncryptionPort);
     }
-
     @Bean
     public IUserPersistencePort userPersistencePort(
             IUserRepository userRepository,
@@ -153,6 +149,47 @@ public class BeanConfiguration {
                 );
             }
         };
+    }
+
+
+
+    /* Security */
+
+    /* Authentication*/
+     @Bean
+     public IAuthenticationServicePort authenticationServicePort(
+             IUserPersistencePort userPersistencePort,
+             IJwtServicePort jwtServicePort,
+             IPasswordEncryptionPort passwordEncryptionPort) {
+         return new AuthenticationUseCase(
+                    userPersistencePort,
+                    jwtServicePort,
+                    passwordEncryptionPort
+            );
+        }
+
+
+    /* JWT */
+    @Value("${jwt.secret}")
+    private String jwtSecret;
+
+    @Value("${jwt.expiration}")
+    private int jwtExpiration;
+
+    @Bean
+    public IJwtPersistencePort jwtPersistencePort(JwtKeyProvider jwtKeyProvider) {
+        return new JwtAdapter(jwtKeyProvider);
+    }
+    @Bean
+    public IJwtServicePort jwtServicePort(
+            IJwtPersistencePort jwtPersistencePort,
+            IUserPersistencePort userPersistencePort) {
+        return new JwtUseCase(
+                jwtPersistencePort,
+                userPersistencePort,
+                jwtSecret,
+                jwtExpiration
+        );
     }
 
 }

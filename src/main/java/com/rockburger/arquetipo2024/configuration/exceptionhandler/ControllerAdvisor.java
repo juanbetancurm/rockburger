@@ -11,6 +11,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -110,6 +111,50 @@ public class ControllerAdvisor {
         errorResponse.put("error", "Duplicate User");
         errorResponse.put("message", ex.getMessage());
         return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
+    }
+
+
+
+
+
+    @ExceptionHandler(InvalidCredentialsException.class)
+    public ResponseEntity<ExceptionResponse> handleInvalidCredentialsException(
+            InvalidCredentialsException exception) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(new ExceptionResponse(
+                        exception.getMessage(),
+                        HttpStatus.UNAUTHORIZED.toString(),
+                        LocalDateTime.now()));
+    }
+
+    @ExceptionHandler(TokenExpiredException.class)
+    public ResponseEntity<ExceptionResponse> handleTokenExpiredException(
+            TokenExpiredException exception) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(new ExceptionResponse(
+                        exception.getMessage(),
+                        HttpStatus.UNAUTHORIZED.toString(),
+                        LocalDateTime.now()));
+    }
+
+    @ExceptionHandler(InvalidTokenException.class)
+    public ResponseEntity<ExceptionResponse> handleInvalidTokenException(
+            InvalidTokenException exception) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(new ExceptionResponse(
+                        exception.getMessage(),
+                        HttpStatus.UNAUTHORIZED.toString(),
+                        LocalDateTime.now()));
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ExceptionResponse> handleAccessDeniedException(
+            AccessDeniedException exception) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(new ExceptionResponse(
+                        Constants.INSUFFICIENT_PERMISSIONS_MESSAGE,
+                        HttpStatus.FORBIDDEN.toString(),
+                        LocalDateTime.now()));
     }
 
 }

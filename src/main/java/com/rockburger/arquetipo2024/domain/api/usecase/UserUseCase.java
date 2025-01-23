@@ -2,15 +2,12 @@ package com.rockburger.arquetipo2024.domain.api.usecase;
 
 import com.rockburger.arquetipo2024.domain.api.IUserServicePort;
 import com.rockburger.arquetipo2024.domain.exception.DuplicateUserException;
-import com.rockburger.arquetipo2024.domain.exception.InvalidAgeException;
 import com.rockburger.arquetipo2024.domain.model.UserModel;
 import com.rockburger.arquetipo2024.domain.spi.IPasswordEncryptionPort;
 import com.rockburger.arquetipo2024.domain.spi.IUserPersistencePort;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.time.LocalDate;
-import java.time.Period;
+
 
 public class UserUseCase implements IUserServicePort {
     private static final Logger logger = LoggerFactory.getLogger(UserUseCase.class);
@@ -33,7 +30,7 @@ public class UserUseCase implements IUserServicePort {
         // Encrypt password and set role
         String encryptedPassword = passwordEncryptionPort.encryptPassword(userModel.getPassword());
         userModel.setEncryptedPassword(encryptedPassword);
-        userModel.setRole("aux_bodega");
+        userModel.setRole("auxiliar");
 
         UserModel savedUser = userPersistencePort.save(userModel);
         logger.info("Successfully created  user with ID: {}", savedUser.getId());

@@ -9,3 +9,12 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+
+jwt:
+  secret: "9qZgHlZ5Kg+POpcNp1YWlN5F/mkDoYysAaMAzvCydswRhE+tzLXytB/bNiU+NjPiCbKN7UZWFkgtw0wXSDYWQg=="  #WhileTesting
+  expiration: 3600000 #60minsWhileTesting
+
+logging:
+  level:
+    org.springframework.security: DEBUG
+    com.rockburger.arquetipo2024: DEBUG

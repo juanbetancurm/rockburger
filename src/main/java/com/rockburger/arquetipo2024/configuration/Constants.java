@@ -22,4 +22,7 @@ public class Constants {
     public static final String DUPLICATE_EMAIL_MESSAGE = "Email already exists";
     public static final String DUPLICATE_ID_DOCUMENT_MESSAGE = "ID Document already exists";
     public static final String INVALID_PHONE_FORMAT_MESSAGE = "Invalid phone number format";
+    public static final String INSUFFICIENT_PERMISSIONS_MESSAGE = "You don't have enough permissions";
+
+
 }

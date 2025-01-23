@@ -1,4 +1,4 @@
-package com.rockburger.arquetipo2024.adapters.driven.jpa.mysql.adapter;
+package com.rockburger.arquetipo2024.adapters.driven.jpa.mysql.adapter.security;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
