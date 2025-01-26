@@ -2,7 +2,7 @@ package com.rockburger.arquetipo2024.adapters.driven.jpa.mysql.adapter.security;
 
 
 import com.rockburger.arquetipo2024.configuration.security.JwtKeyProvider;
-import com.rockburger.arquetipo2024.domain.model.JwtGenerationException;
+import com.rockburger.arquetipo2024.domain.exception.JwtGenerationException;
 import com.rockburger.arquetipo2024.domain.model.UserModel;
 import com.rockburger.arquetipo2024.domain.spi.IJwtPersistencePort;
 import io.jsonwebtoken.*;
@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
-import java.security.Key;
 import java.util.Date;
 
 @Component

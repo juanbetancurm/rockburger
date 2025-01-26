@@ -53,5 +53,5 @@ public class UserEntity {
     private String password;
 
     @Column(nullable = false)
-    private String role = "aux_bodega";
+    private String role = "auxiliar";
 }

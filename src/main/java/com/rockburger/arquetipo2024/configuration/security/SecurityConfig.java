@@ -36,9 +36,9 @@ public class SecurityConfig {
                         "/webjars/**",
                         "/api/auth/**").permitAll()
                 .antMatchers("/category/**", "/brand/**", "/article/**")
-                .hasAnyRole("admin", "aux_bodega")  // Notice the ROLE_ prefix is automatically added
+                .hasAnyRole("admin", "auxiliar")  // Notice the ROLE_ prefix is automatically added
                 .antMatchers("/supply/**")
-                .hasAnyRole("aux_bodega", "admin")
+                .hasAnyRole("auxiliar", "admin")
                 .antMatchers("/cart/**", "/purchase/**")
                 .hasRole("CLIENT")
                 .anyRequest().authenticated()
