@@ -39,9 +39,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     FilterChain filterChain) throws ServletException, IOException {
         try {
             String jwt = extractJwtFromRequest(request);
+
+            logger.debug("Processing request to '{}' with JWT: {}", request.getRequestURI(),
+                    jwt != null ? "present" : "not present");
+
             if (jwt != null) {
                 UserModel user = jwtServicePort.validateAndGetUserFromToken(jwt);
+                logger.debug("User authenticated with role: {}", user.getRole());
                 UserDetails userDetails = userDetailsService.loadUserByUsername(user.getEmail());
+                logger.debug("UserDetails loaded with authorities: {}",
+                        userDetails.getAuthorities());
 
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(

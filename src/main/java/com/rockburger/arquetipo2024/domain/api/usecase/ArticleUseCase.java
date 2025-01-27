@@ -1,6 +1,7 @@
 package com.rockburger.arquetipo2024.domain.api.usecase;
 
 
+import com.rockburger.arquetipo2024.adapters.driven.jpa.mysql.exception.ElementNotFoundException;
 import com.rockburger.arquetipo2024.domain.api.IArticleServicePort;
 import com.rockburger.arquetipo2024.domain.api.IBrandServicePort;
 import com.rockburger.arquetipo2024.domain.api.ICategoryServicePort;
@@ -91,6 +92,22 @@ public class ArticleUseCase implements IArticleServicePort {
         }
         return articlePersistencePort.listArticles(sortBy, sortOrder, page, size);
 
+    }
+
+
+    @Override
+    public ArticleModel getArticleById(Long articleId) {
+        logger.info("Getting article by ID: {}", articleId);
+
+        if (articleId == null) {
+            throw new BlankFieldException("Article ID cannot be null");
+        }
+
+        return articlePersistencePort.findById(articleId)
+                .orElseThrow(() -> {
+                    logger.error("Article not found with ID: {}", articleId);
+                    return new ElementNotFoundException();
+                });
     }
 }
 

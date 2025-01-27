@@ -14,6 +14,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -55,6 +56,14 @@ public class ArticleAdapter implements IArticlePersistencePort{
                 .stream()
                 .map(articleEntityMapper::toModel)
                 .toList();
+    }
+
+
+    @Override
+    public Optional<ArticleModel> findById(Long id) {
+        logger.debug("Finding article by ID: {}", id);
+        return articleRepository.findById(id)
+                .map(articleEntityMapper::toModel);
     }
 
 

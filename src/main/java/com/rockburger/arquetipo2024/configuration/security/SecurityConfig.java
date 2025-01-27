@@ -30,15 +30,16 @@ public class SecurityConfig {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
+                .antMatchers("/error").permitAll()
                 .antMatchers("/swagger-ui/**",
                         "/v3/api-docs/**",
                         "/swagger-resources/**",
                         "/webjars/**",
                         "/api/auth/**").permitAll()
-                .antMatchers("/category/**", "/brand/**", "/article/**")
-                .hasAnyRole("admin", "auxiliar")  // Notice the ROLE_ prefix is automatically added
                 .antMatchers("/supply/**")
                 .hasAnyRole("auxiliar", "admin")
+                .antMatchers("/category/**", "/brand/**", "/article/**")
+                .hasAnyRole("admin", "auxiliar")
                 .antMatchers("/cart/**", "/purchase/**")
                 .hasRole("CLIENT")
                 .anyRequest().authenticated()

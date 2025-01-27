@@ -30,7 +30,7 @@ public class UserUseCase implements IUserServicePort {
         // Encrypt password and set role
         String encryptedPassword = passwordEncryptionPort.encryptPassword(userModel.getPassword());
         userModel.setEncryptedPassword(encryptedPassword);
-        userModel.setRole("auxiliar");
+        userModel.setRole("ROLE_auxiliar");
 
         UserModel savedUser = userPersistencePort.save(userModel);
         logger.info("Successfully created  user with ID: {}", savedUser.getId());
