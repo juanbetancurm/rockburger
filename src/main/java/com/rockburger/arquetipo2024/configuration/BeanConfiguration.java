@@ -241,4 +241,22 @@ public class BeanConfiguration {
         };
     }
 
+
+    /* Client Classes*/
+
+    @Bean
+    public IClientServicePort clientServicePort(
+            IClientPersistencePort clientPersistencePort,
+            IPasswordEncryptionPort passwordEncryptionPort) {
+        return new ClientUseCase(clientPersistencePort, passwordEncryptionPort);
+    }
+
+    @Bean
+    public IClientPersistencePort clientPersistencePort(
+            IClientRepository clientRepository,
+            IClientEntityMapper clientEntityMapper) {
+        return new ClientAdapter(clientRepository, clientEntityMapper);
+    }
+
+
 }

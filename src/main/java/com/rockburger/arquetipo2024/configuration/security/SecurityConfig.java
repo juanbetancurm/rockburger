@@ -41,7 +41,7 @@ public class SecurityConfig {
                 .antMatchers("/category/**", "/brand/**", "/article/**")
                 .hasAnyRole("admin", "auxiliar")
                 .antMatchers("/cart/**", "/purchase/**")
-                .hasRole("CLIENT")
+                .hasRole("client")
                 .anyRequest().authenticated()
                 .and()
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
