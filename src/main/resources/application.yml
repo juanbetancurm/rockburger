@@ -18,3 +18,8 @@ logging:
   level:
     org.springframework.security: DEBUG
     com.rockburger.arquetipo2024: DEBUG
+
+
+cart:
+  service:
+    url: http://localhost:8091

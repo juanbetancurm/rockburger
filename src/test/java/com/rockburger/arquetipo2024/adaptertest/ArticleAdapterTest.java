@@ -6,6 +6,7 @@ import com.rockburger.arquetipo2024.adapters.driven.jpa.mysql.mapper.IArticleEnt
 import com.rockburger.arquetipo2024.adapters.driven.jpa.mysql.repository.IArticleRepository;
 import com.rockburger.arquetipo2024.adapters.driven.jpa.mysql.repository.IBrandRepository;
 import com.rockburger.arquetipo2024.domain.model.ArticleModel;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -18,8 +19,10 @@ import org.springframework.data.domain.Sort;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 
 class ArticleAdapterTest {
 

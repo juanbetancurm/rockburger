@@ -56,7 +56,8 @@ public class ArticleRestController {
 
     @Operation(
             summary = "Create a new Article",
-            description = "Here you can create a new Article by providing the article's name (max length 50 characters), description (max length 90 characters), quantity, price, and a list of category IDs (between 1 and 3 categories). If an article with the same name already exists or validation fails, an appropriate error will be returned.",
+            description = "Here you can create a new Article by providing the article's name (max length 50 characters), description (max length 90 characters), " +
+                    "quantity, price, and a list of category IDs (between 1 and 3 categories). If an article with the same name already exists or validation fails, an appropriate error will be returned.",
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Article data to be created",
                     content = @Content(
@@ -68,7 +69,8 @@ public class ArticleRestController {
                     @ApiResponse(responseCode = "201", description = "Article successfully created",
                             content = @Content(
                                     schema = @Schema(implementation = ArticleResponse.class),
-                                    examples = @ExampleObject(value = "{ \"id\": 1, \"name\": \"Test Article\", \"description\": \"Test Description\", \"quantity\": 10, \"price\": 100.0, \"categories\": [{ \"id\": 1, \"name\": \"Category 1\" }, { \"id\": 2, \"name\": \"Category 2\" }] }")
+                                    examples = @ExampleObject(value = "{ \"id\": 1, \"name\": \"Test Article\", \"description\": \"Test Description\", \"quantity\": 10, \"price\": 100.0, " +
+                                            "\"categories\": [{ \"id\": 1, \"name\": \"Category 1\" }, { \"id\": 2, \"name\": \"Category 2\" }] }")
                             )
                     ),
                     @ApiResponse(responseCode = "400", description = "Validation errors occurred",
