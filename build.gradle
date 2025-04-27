@@ -21,33 +21,84 @@ repositories {
 	mavenCentral()
 }
 
+ext {
+	set('springCloudVersion', "2021.0.8")
+}
+
+dependencyManagement {
+	imports {
+		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+	}
+}
+
 dependencies {
+
+	//Starters
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
-	compileOnly 'org.projectlombok:lombok'
+	//Database
 	runtimeOnly 'com.mysql:mysql-connector-j'
+
+	//Lombok
+	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
+
+	//Mapstruct
+	implementation 'org.mapstruct:mapstruct:1.5.3.Final'
 	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.3.Final'
 
-	implementation 'org.mapstruct:mapstruct:1.5.3.Final'
+	//Spring Cloud Feign
+	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+	implementation 'org.springframework.cloud:spring-cloud-starter-loadbalancer'
+	implementation 'org.springframework.cloud:spring-cloud-starter-circuitbreaker-resilience4j'
+	//implementation 'org.springframework.cloud:spring-cloud-starter-openfeign:3.1.8'
+	//implementation 'org.springframework.cloud:spring-cloud-starter-loadbalancer:3.1.8'
 
+	//Spring Cloud
+	implementation 'org.springframework.cloud:spring-cloud-starter-circuitbreaker-resilience4j'
+	implementation 'io.github.resilience4j:resilience4j-spring-boot2'
+	implementation 'io.github.resilience4j:resilience4j-circuitbreaker'
+	implementation 'io.github.resilience4j:resilience4j-timelimiter'
 
+	//Security-JWT
+	implementation 'org.springframework.security:spring-security-crypto'
+	implementation 'org.springframework.security:spring-security-core'
+	//implementation 'org.springframework.security:spring-security-crypto:5.7.1'
+	//implementation 'org.springframework.security:spring-security-core:6.3.5'
+	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
+	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+
+	//Documentation
+	implementation 'org.springdoc:springdoc-openapi-ui:1.6.14'
+	implementation 'org.springdoc:springdoc-openapi-security:1.6.14'
+
+	//Testing
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.mockito:mockito-core:5.0.0'
 	testImplementation 'org.mockito:mockito-junit-jupiter:5.0.0'
 	testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
 	testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
 
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	// Spring Cloud Circuit Breaker with Resilience4j
+	implementation 'org.springframework.cloud:spring-cloud-starter-circuitbreaker-resilience4j:2.1.7'
 
-	testImplementation 'org.springframework.boot:spring-boot-starter-web'
-	testImplementation 'org.springframework:spring-test'
+	// Direct Resilience4j dependencies
+	implementation 'io.github.resilience4j:resilience4j-spring-boot2:1.7.0'
+	implementation 'io.github.resilience4j:resilience4j-circuitbreaker:1.7.0'
+	implementation 'io.github.resilience4j:resilience4j-timelimiter:1.7.0'
+	implementation 'io.github.resilience4j:resilience4j-retry:1.7.0'
+	implementation 'io.github.resilience4j:resilience4j-bulkhead:1.7.0'
+	implementation 'io.github.resilience4j:resilience4j-cache:1.7.0'
+	implementation 'io.github.resilience4j:resilience4j-ratelimiter:1.7.0'
 
-
-	implementation 'org.springframework.boot:spring-boot-starter-validation'
-	implementation 'org.springframework.boot:spring-boot-starter-actuator'
-
-	implementation 'org.springdoc:springdoc-openapi-ui:1.6.14'
+	//testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
+	//testImplementation 'org.springframework.boot:spring-boot-starter-web'
+	//testImplementation 'org.springframework:spring-test'
 }
 
 tasks.named('bootBuildImage') {
@@ -57,3 +108,8 @@ tasks.named('bootBuildImage') {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+test {
+	useJUnitPlatform()
+}
+
