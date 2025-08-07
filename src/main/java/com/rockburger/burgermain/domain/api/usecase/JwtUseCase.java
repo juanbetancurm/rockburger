@@ -42,8 +42,8 @@ public class JwtUseCase implements IJwtServicePort {
             throw new InvalidTokenException("Invalid or expired token");
         }
 
-        String username = jwtPersistencePort.getUsernameFromToken(token, jwtSecret);
-        return userPersistencePort.findByEmail(username)
+        String mail = jwtPersistencePort.getUsernameFromToken(token, jwtSecret);
+        return userPersistencePort.findByEmail(mail)
                 .orElseThrow(() -> new InvalidTokenException("User not found for token"));
     }
 }

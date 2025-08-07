@@ -11,3 +11,5 @@ public interface IArticleRequestMapper {
     @Mapping(target = "brandId", source = "brandId", ignore = true)
     ArticleModel toModel(AddArticleRequest addArticleRequest);
 }
+
+

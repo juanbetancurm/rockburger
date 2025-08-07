@@ -32,11 +32,11 @@ public class ArticleAdapter implements IArticlePersistencePort{
 
     @Override
     public ArticleModel save(ArticleModel articleModel) {
-        // Map ArticleModel to ArticleEntity
+
         logger.info("Saving ArticleModel in persistence layer: {}", articleModel);
         ArticleEntity articleEntity = articleEntityMapper.toEntity(articleModel);
 
-        // Save entity in the database
+
         logger.info("Mapped ArticleEntity: {}", articleEntity);
         ArticleEntity savedArticle = articleRepository.save(articleEntity);
 
