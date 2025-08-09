@@ -41,12 +41,14 @@ public class SecurityConfig {
                         "/swagger-resources/**",
                         "/webjars/**",
                         "/api/auth/**").permitAll()
+                .antMatchers("/purchase/**")
+                .hasAnyRole("auxiliar", "admin")
                 .antMatchers("/supply/**")
                 .hasAnyRole("auxiliar", "admin")
                 .antMatchers("/category/**", "/brand/**", "/article/**")
                 .hasAnyRole("admin", "auxiliar")
                 .antMatchers("/cart/**", "/purchase/**")
-                .hasRole("client")
+                .hasAnyRole("auxiliar", "admin","client")
                 .anyRequest().authenticated()
                 .and()
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

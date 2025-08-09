@@ -10,6 +10,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
@@ -154,6 +155,25 @@ public class ControllerAdvisor {
                 .body(new ExceptionResponse(
                         Constants.INSUFFICIENT_PERMISSIONS_MESSAGE,
                         HttpStatus.FORBIDDEN.toString(),
+                        LocalDateTime.now()));
+    }
+
+
+    /*Order Management*/
+
+    @ExceptionHandler(InsufficientStockException.class)
+    public ResponseEntity<Map<String, String>> handleInsufficientStockException(InsufficientStockException ex) {
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put(Constants.INSUFFICIENT_STOCK_MESSAGE, ex.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(OrderProcessingException.class)
+    public ResponseEntity<ExceptionResponse> handleOrderProcessingException(OrderProcessingException ex) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ExceptionResponse(
+                        Constants.ORDER_PROCESSING_ERROR_MESSAGE + ": " + ex.getMessage(),
+                        HttpStatus.INTERNAL_SERVER_ERROR.toString(),
                         LocalDateTime.now()));
     }
 

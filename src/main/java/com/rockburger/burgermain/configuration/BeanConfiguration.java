@@ -6,18 +6,13 @@ import com.rockburger.burgermain.adapters.driven.jpa.mysql.adapter.security.BCry
 import com.rockburger.burgermain.adapters.driven.jpa.mysql.mapper.*;
 import com.rockburger.burgermain.adapters.driven.jpa.mysql.repository.*;
 import com.rockburger.burgermain.adapters.driving.http.dto.request.AddSupplyRequest;
-import com.rockburger.burgermain.adapters.driving.http.dto.response.BrandResponse;
-import com.rockburger.burgermain.adapters.driving.http.dto.response.CategoryResponse;
-import com.rockburger.burgermain.adapters.driving.http.dto.response.SupplyResponse;
-import com.rockburger.burgermain.adapters.driving.http.dto.response.UserResponse;
+import com.rockburger.burgermain.adapters.driving.http.dto.request.CompleteOrderRequest;
+import com.rockburger.burgermain.adapters.driving.http.dto.response.*;
 import com.rockburger.burgermain.adapters.driving.http.mapper.*;
 import com.rockburger.burgermain.configuration.security.JwtKeyProvider;
 import com.rockburger.burgermain.domain.api.*;
 import com.rockburger.burgermain.domain.api.usecase.*;
-import com.rockburger.burgermain.domain.model.BrandModel;
-import com.rockburger.burgermain.domain.model.CategoryModel;
-import com.rockburger.burgermain.domain.model.SupplyModel;
-import com.rockburger.burgermain.domain.model.UserModel;
+import com.rockburger.burgermain.domain.model.*;
 import com.rockburger.burgermain.domain.spi.*;
 import com.rockburger.burgermain.domain.spi.IPasswordEncryptionPort;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +23,7 @@ import org.springframework.context.annotation.Configuration;
 import com.rockburger.burgermain.domain.api.IJwtServicePort;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Configuration
@@ -261,6 +257,119 @@ public class BeanConfiguration {
             IClientRepository clientRepository,
             IClientEntityMapper clientEntityMapper) {
         return new ClientAdapter(clientRepository, clientEntityMapper);
+    }
+
+
+
+
+    /*Order Classes*/
+
+
+    @Bean
+    public IOrderServicePort orderServicePort(
+            IOrderPersistencePort orderPersistencePort,
+            IArticlePersistencePort articlePersistencePort) {
+        return new OrderUseCase(orderPersistencePort, articlePersistencePort);
+    }
+
+    @Bean
+    public IOrderPersistencePort orderPersistencePort(
+            IOrderRepository orderRepository,
+            IOrderEntityMapper orderEntityMapper) {
+        return new OrderAdapter(orderRepository, orderEntityMapper);
+    }
+
+    @Bean
+    public IOrderRequestMapper orderRequestMapper() {
+        return new IOrderRequestMapper() {
+            @Override
+            public OrderModel toModel(CompleteOrderRequest request, Long userId) {
+                if (request == null) {
+                    return null;
+                }
+                OrderModel model = new OrderModel();
+                model.setUserId(userId);
+                model.setTotalAmount(request.getTotalAmount());
+
+                List<OrderItemModel> items = request.getItems().stream()
+                        .map(item -> new OrderItemModel(
+                                item.getArticleId(),
+                                item.getArticleName(),
+                                item.getQuantity(),
+                                item.getUnitPrice()
+                        ))
+                        .toList();
+                model.setItems(items);
+
+                return model;
+            }
+        };
+    }
+
+    @Bean
+    public IOrderResponseMapper orderResponseMapper() {
+        return new IOrderResponseMapper() {
+            @Override
+            public OrderResponse toResponse(OrderModel orderModel) {
+                if (orderModel == null) {
+                    return null;
+                }
+                List<OrderItemResponse> itemResponses = orderModel.getItems().stream()
+                        .map(item -> new OrderItemResponse(
+                                item.getId(),
+                                item.getArticleId(),
+                                item.getArticleName(),
+                                item.getQuantity(),
+                                item.getUnitPrice(),
+                                item.getSubtotal()
+                        ))
+                        .toList();
+
+                return new OrderResponse(
+                        orderModel.getId(),
+                        orderModel.getUserId(),
+                        orderModel.getTotalAmount(),
+                        orderModel.getOrderDate(),
+                        orderModel.getStatus(),
+                        itemResponses
+                );
+            }
+
+            @Override
+            public SalesSummaryResponse toResponse(SalesSummaryModel salesSummaryModel) {
+                if (salesSummaryModel == null) {
+                    return null;
+                }
+                return new SalesSummaryResponse(
+                        salesSummaryModel.getDate(),
+                        salesSummaryModel.getTotalOrders(),
+                        salesSummaryModel.getTotalRevenue()
+                );
+            }
+
+            @Override
+            public ProductAvailabilityResponse toAvailabilityResponse(ArticleModel articleModel) {
+                if (articleModel == null) {
+                    return null;
+                }
+                return new ProductAvailabilityResponse(
+                        articleModel.getId(),
+                        articleModel.getName(),
+                        articleModel.getQuantity(),
+                        articleModel.getPrice()
+                );
+            }
+
+            @Override
+            public List<ProductAvailabilityResponse> toAvailabilityResponseList(List<ArticleModel> articles) {
+                if (articles == null) {
+                    return List.of();
+                }
+                return articles.stream()
+                        .map(this::toAvailabilityResponse)
+                        .toList();
+            }
+        };
     }
 
 

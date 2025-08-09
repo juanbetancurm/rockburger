@@ -24,5 +24,8 @@ public class Constants {
     public static final String INVALID_PHONE_FORMAT_MESSAGE = "Invalid phone number format";
     public static final String INSUFFICIENT_PERMISSIONS_MESSAGE = "You don't have enough permissions";
 
+    public static final String INSUFFICIENT_STOCK_MESSAGE = "Insufficient stock for the requested quantity";
+    public static final String ORDER_PROCESSING_ERROR_MESSAGE = "Error processing the order";
+
 
 }
