@@ -99,6 +99,10 @@ dependencies {
 	//testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
 	//testImplementation 'org.springframework.boot:spring-boot-starter-web'
 	//testImplementation 'org.springframework:spring-test'
+
+	implementation 'org.springframework:spring-context'
+	implementation 'com.fasterxml.jackson.core:jackson-databind'
+	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 }
 
 tasks.named('bootBuildImage') {
