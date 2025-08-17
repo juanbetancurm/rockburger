@@ -51,8 +51,9 @@ public class BeanConfiguration {
         return new ArticleAdapter(articleRepository, articleEntityMapper, brandRepository);
     }
     @Bean
-    public ICategoryPersistencePort categoryPersistencePort(){
-        return new CategoryAdapter(categoryRepository, categoryEntityMapper);
+    public ICategoryPersistencePort categoryPersistencePort() {
+        // Updated to include IArticleRepository for checking if category is in use
+        return new CategoryAdapter(categoryRepository, categoryEntityMapper, articleRepository);
     }
     @Bean
     public ICategoryServicePort categoryServicePort(){
@@ -83,9 +84,9 @@ public class BeanConfiguration {
         };
     }
     @Bean
-    public IBrandPersistencePort brandPersistencePort(){
-
-        return new BrandAdapter(brandRepository, brandEntityMapper);
+    public IBrandPersistencePort brandPersistencePort() {
+        // Updated to include IArticleRepository for checking if brand is in use
+        return new BrandAdapter(brandRepository, brandEntityMapper, articleRepository);
     }
     @Bean
     public IBrandServicePort brandServicePort(){
