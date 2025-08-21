@@ -31,6 +31,11 @@ public class CorsConfig {
         // Allow all headers
         configuration.addAllowedHeader("*");
 
+        // Explicitly expose Authorization header for frontend access
+        configuration.setExposedHeaders(Arrays.asList(
+                "Authorization", "Content-Type", "X-Requested-With", "Accept", "Origin"
+        ));
+
         // Allow specific HTTP methods
         configuration.setAllowedMethods(Arrays.asList(
                 "GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"

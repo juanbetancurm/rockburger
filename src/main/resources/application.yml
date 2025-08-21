@@ -32,7 +32,10 @@ logging:
   level:
     org.springframework.security: DEBUG
     com.rockburger.burgermain: DEBUG
+    com.rockburger.burgermain.configuration.security: DEBUG
+    com.rockburger.burgermain.adapters.driven.feign: DEBUG
     org.springframework.cloud.openfeign: DEBUG
+    feign: DEBUG
     io.github.resilience4j: DEBUG
 
 ---

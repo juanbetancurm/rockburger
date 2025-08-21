@@ -29,27 +29,40 @@ public class JwtTokenInterceptor implements RequestInterceptor {
 
     @Override
     public void apply(RequestTemplate requestTemplate) {
-        // First try to get token from thread-local storage
-        String token = jwtContextHolder.getToken();
-
-        // If not found, try to get from current thread's SecurityContext
+        String token = null;
+        
+        // 1. Try ThreadLocal first (highest priority)
+        token = jwtContextHolder.getToken();
+        if (token != null) {
+            logger.debug("Token retrieved from ThreadLocal for: {}", requestTemplate.url());
+        }
+        
+        // 2. Try current SecurityContext
         if (token == null) {
             token = getTokenFromCurrentSecurityContext();
+            if (token != null) {
+                logger.debug("Token retrieved from SecurityContext for: {}", requestTemplate.url());
+                // Store for future use in ThreadLocal
+                jwtContextHolder.setToken(token);
+            }
         }
-
-        // If still not found, try from the stored request context
+        
+        // 3. Try stored request context as fallback
         if (token == null) {
             token = getTokenFromStoredSecurityContext();
+            if (token != null) {
+                logger.debug("Token retrieved from stored context for: {}", requestTemplate.url());
+                // Store for future use in ThreadLocal
+                jwtContextHolder.setToken(token);
+            }
         }
-
+        
+        // 4. Apply token to request
         if (token != null && !token.isEmpty()) {
-            logger.debug("Adding JWT token to Feign request to: {}", requestTemplate.url());
             requestTemplate.header(AUTHORIZATION_HEADER, BEARER_PREFIX + token);
-
-            // Store for future use
-            jwtContextHolder.setToken(token);
+            logger.debug("JWT token added to Feign request to: {}", requestTemplate.url());
         } else {
-            logger.warn("No JWT token found for Feign request to: {}", requestTemplate.url());
+            logger.error("No JWT token available for Feign request to: {} - This will likely result in 401 Unauthorized", requestTemplate.url());
         }
     }
 

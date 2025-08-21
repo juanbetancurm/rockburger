@@ -54,16 +54,26 @@ public class CartServiceAdapter {
         return null;
     }
 
+    private void ensureTokenInContextHolder() {
+        String token = jwtContextHolder.getToken();
+        if (token == null) {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            if (auth != null && auth.getCredentials() instanceof String) {
+                token = (String) auth.getCredentials();
+                jwtContextHolder.setToken(token);
+                logger.debug("Token extracted from security context and stored in context holder");
+            }
+        }
+    }
+
     public CartResponse getActiveCart() {
         logger.debug("Getting active cart");
         try {
-            String authHeader = getAuthHeaderFromSecurityContext();
-            if (authHeader == null) {
-                logger.error("Authentication token required but not available");
-                return getFallbackCart();
-            }
-            logger.debug("Sending request to cart service with auth header");
-            CartResponse response = cartFeignClient.getActiveCart(authHeader).getBody();
+            // Ensure token is available in context holder for Feign interceptor
+            ensureTokenInContextHolder();
+            
+            // Let Feign interceptor handle token automatically
+            CartResponse response = cartFeignClient.getActiveCart().getBody();
             logger.debug("Received response from cart service: {}", response);
             return response;
         } catch (Exception e) {
@@ -77,11 +87,8 @@ public class CartServiceAdapter {
                 articleId, articleName, quantity, price);
 
         try {
-            String authHeader = getAuthHeaderFromSecurityContext();
-            if (authHeader == null) {
-                logger.error("Authentication token required but not available");
-                return getFallbackCart();
-            }
+            // Ensure token is available in context holder for Feign interceptor
+            ensureTokenInContextHolder();
 
             AddCartItemRequest request = new AddCartItemRequest();
             request.setArticleId(articleId);
@@ -90,7 +97,8 @@ public class CartServiceAdapter {
             request.setPrice(price);
 
             logger.debug("Sending addItemToCart request to cart service: {}", request);
-            CartResponse response = cartFeignClient.addItemToCart(authHeader, request).getBody();
+            // Let Feign interceptor handle token automatically
+            CartResponse response = cartFeignClient.addItemToCart(getAuthHeaderFromSecurityContext(), request).getBody();
             logger.debug("Received response from cart service: {}", response);
             return response;
         } catch (Exception e) {
@@ -103,6 +111,9 @@ public class CartServiceAdapter {
         logger.info("Removing item from cart: articleId={}", articleId);
 
         try {
+            // Ensure token is available in context holder for Feign interceptor
+            ensureTokenInContextHolder();
+            
             String authHeader = getAuthHeaderFromSecurityContext();
             if (authHeader == null) {
                 logger.error("Authentication token required but not available");
@@ -118,6 +129,9 @@ public class CartServiceAdapter {
     public void clearCart() {
         logger.info("Clearing cart");
         try {
+            // Ensure token is available in context holder for Feign interceptor
+            ensureTokenInContextHolder();
+            
             String authHeader = getAuthHeaderFromSecurityContext();
             if (authHeader == null) {
                 logger.error("Authentication token required but not available");

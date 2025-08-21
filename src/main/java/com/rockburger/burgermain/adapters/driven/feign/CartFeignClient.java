@@ -1,5 +1,6 @@
 package com.rockburger.burgermain.adapters.driven.feign;
 
+import com.rockburger.burgermain.adapters.driven.feign.config.FeignConfig;
 import com.rockburger.burgermain.adapters.driven.feign.dto.AddCartItemRequest;
 import com.rockburger.burgermain.adapters.driven.feign.dto.CartResponse;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -8,7 +9,8 @@ import org.springframework.web.bind.annotation.*;
 
 @FeignClient(
         name = "cart-service",
-        url = "${cart.service.url}"
+        url = "${cart.service.url}",
+        configuration = FeignConfig.class
 )
 public interface CartFeignClient {
     @GetMapping("/cart")

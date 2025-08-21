@@ -21,6 +21,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import com.rockburger.burgermain.domain.api.IJwtServicePort;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -39,26 +41,66 @@ public class BeanConfiguration {
     private final IArticleRepository articleRepository;
     private final IArticleEntityMapper articleEntityMapper;
 
+    // JWT Configuration Properties
+    @Value("${jwt.secret}")
+    private String jwtSecret;
+
+    @Value("${jwt.expiration:3600000}") // Default: 1 hour
+    private int jwtExpiration;
+
+    @Value("${jwt.access-token-expiration:3600000}") // Default: 1 hour (3600000 ms)
+    private int jwtAccessTokenExpiration;
+
+    @Value("${jwt.refresh-token-expiration:604800000}") // Default: 7 days (604800000 ms)
+    private int jwtRefreshTokenExpiration;
+
+    // Security Beans
+    @Bean
+    public BCryptPasswordEncoder bCryptPasswordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return bCryptPasswordEncoder();
+    }
+
+    @Bean
+    public JwtKeyProvider jwtKeyProvider() {
+        return new JwtKeyProvider();
+    }
+
+    // Define the JWT secret key bean with qualifier
+    @Bean
+    @Qualifier("jwtSecretKey")
+    public String jwtSecretKey() {
+        return jwtSecret;
+    }
+
+    // Article Related Beans
     @Bean
     public IArticleServicePort articleServicePort(IArticlePersistencePort articlePersistencePort,
                                                   ICategoryServicePort categoryServicePort,
                                                   IBrandServicePort brandServicePort) {
-
         return new ArticleUseCase(articlePersistencePort, categoryServicePort, brandServicePort);
     }
+
     @Bean
     public IArticlePersistencePort articlePersistencePort() {
         return new ArticleAdapter(articleRepository, articleEntityMapper, brandRepository);
     }
+
+    // Category Related Beans
     @Bean
     public ICategoryPersistencePort categoryPersistencePort() {
-        // Updated to include IArticleRepository for checking if category is in use
         return new CategoryAdapter(categoryRepository, categoryEntityMapper, articleRepository);
     }
+
     @Bean
     public ICategoryServicePort categoryServicePort(){
         return new CategoryUseCase(categoryPersistencePort());
     }
+
     @Bean
     public ICategoryResponseMapper categoryResponseMapper(){
         return new ICategoryResponseMapper() {
@@ -76,23 +118,24 @@ public class BeanConfiguration {
                 if (categoryModels == null){
                     return List.of();
                 }
-
                 return categoryModels.stream()
                         .map(this::toResponse)
                         .toList();
             }
         };
     }
+
+    // Brand Related Beans
     @Bean
     public IBrandPersistencePort brandPersistencePort() {
-        // Updated to include IArticleRepository for checking if brand is in use
         return new BrandAdapter(brandRepository, brandEntityMapper, articleRepository);
     }
+
     @Bean
     public IBrandServicePort brandServicePort(){
-
         return new BrandUseCase(brandPersistencePort());
     }
+
     @Bean
     public IBrandResponseMapper brandResponseMapper(){
         return new IBrandResponseMapper() {
@@ -110,7 +153,6 @@ public class BeanConfiguration {
                 if (brandModels == null){
                     return List.of();
                 }
-
                 return brandModels.stream()
                         .map(this::toResponse)
                         .toList();
@@ -118,19 +160,21 @@ public class BeanConfiguration {
         };
     }
 
-    /* UserCreation */
+    // User Related Beans
     @Bean
     public IUserServicePort userServicePort(
             IUserPersistencePort userPersistencePort,
             IPasswordEncryptionPort passwordEncryptionPort) {
         return new UserUseCase(userPersistencePort, passwordEncryptionPort);
     }
+
     @Bean
     public IUserPersistencePort userPersistencePort(
             IUserRepository userRepository,
             IUserEntityMapper userEntityMapper) {
         return new UserAdapter(userRepository, userEntityMapper);
     }
+
     @Bean
     public IUserResponseMapper userResponseMapper() {
         return new IUserResponseMapper() {
@@ -150,30 +194,11 @@ public class BeanConfiguration {
         };
     }
 
-
-
-    /* Security */
-
-    /* Authentication*/
-     @Bean
-     public IAuthenticationServicePort authenticationServicePort(
-             IUserPersistencePort userPersistencePort,
-             IJwtServicePort jwtServicePort,
-             IPasswordEncryptionPort passwordEncryptionPort) {
-         return new AuthenticationUseCase(
-                    userPersistencePort,
-                    jwtServicePort,
-                    passwordEncryptionPort
-            );
-        }
-
-
-    /* JWT */
-    @Value("${jwt.secret}")
-    private String jwtSecret;
-
-    @Value("${jwt.expiration}")
-    private int jwtExpiration;
+    // Security and Authentication Beans
+    @Bean
+    public IPasswordEncryptionPort passwordEncryptionPort(PasswordEncoder passwordEncoder) {
+        return new BCryptPasswordAdapter(passwordEncoder);
+    }
 
     @Bean
     public IJwtPersistencePort jwtPersistencePort(
@@ -190,11 +215,44 @@ public class BeanConfiguration {
                 jwtPersistencePort,
                 userPersistencePort,
                 jwtSecret,
-                jwtExpiration
+                jwtAccessTokenExpiration,
+                jwtRefreshTokenExpiration
         );
     }
 
-    /* Supply Beans */
+    @Bean
+    public IAuthenticationServicePort authenticationServicePort(
+            IUserPersistencePort userPersistencePort,
+            IJwtServicePort jwtServicePort,
+            IPasswordEncryptionPort passwordEncryptionPort) {
+        return new AuthenticationUseCase(
+                userPersistencePort,
+                jwtServicePort,
+                passwordEncryptionPort
+        );
+    }
+
+    // Authentication Response Mapper Bean
+    @Bean
+    public IAuthenticationResponseMapper authenticationResponseMapper() {
+        return new IAuthenticationResponseMapper() {
+            @Override
+            public LoginResponseDto toDto(JwtModel jwtModel) {
+                if (jwtModel == null) {
+                    return null;
+                }
+                return new LoginResponseDto(
+                        jwtModel.getToken(),
+                        "Bearer",
+                        jwtModel.getUserId(),
+                        jwtModel.getEmail(),
+                        jwtModel.getRole()
+                );
+            }
+        };
+    }
+
+    // Supply Related Beans
     @Bean
     public ISupplyServicePort supplyServicePort(ISupplyPersistencePort supplyPersistencePort) {
         return new SupplyUseCase(supplyPersistencePort);
@@ -243,9 +301,7 @@ public class BeanConfiguration {
         };
     }
 
-
-    /* Client Classes*/
-
+    // Client Related Beans
     @Bean
     public IClientServicePort clientServicePort(
             IClientPersistencePort clientPersistencePort,
@@ -260,12 +316,7 @@ public class BeanConfiguration {
         return new ClientAdapter(clientRepository, clientEntityMapper);
     }
 
-
-
-
-    /*Order Classes*/
-
-
+    // Order Related Beans
     @Bean
     public IOrderServicePort orderServicePort(
             IOrderPersistencePort orderPersistencePort,
@@ -373,5 +424,66 @@ public class BeanConfiguration {
         };
     }
 
+    /**
+     * Configuration properties bean for JWT settings
+     */
+    @Bean
+    public JwtConfigurationProperties jwtConfigurationProperties() {
+        return new JwtConfigurationProperties(
+                jwtSecret,
+                jwtAccessTokenExpiration,
+                jwtRefreshTokenExpiration
+        );
+    }
 
+    /**
+     * Inner class to hold JWT configuration properties
+     */
+    public static class JwtConfigurationProperties {
+        private final String secret;
+        private final int accessTokenExpiration;
+        private final int refreshTokenExpiration;
+
+        public JwtConfigurationProperties(String secret, int accessTokenExpiration, int refreshTokenExpiration) {
+            this.secret = secret;
+            this.accessTokenExpiration = accessTokenExpiration;
+            this.refreshTokenExpiration = refreshTokenExpiration;
+        }
+
+        public String getSecret() {
+            return secret;
+        }
+
+        public int getAccessTokenExpiration() {
+            return accessTokenExpiration;
+        }
+
+        public int getRefreshTokenExpiration() {
+            return refreshTokenExpiration;
+        }
+
+        public long getAccessTokenExpirationInMillis() {
+            return accessTokenExpiration;
+        }
+
+        public long getRefreshTokenExpirationInMillis() {
+            return refreshTokenExpiration;
+        }
+
+        public long getAccessTokenExpirationInSeconds() {
+            return accessTokenExpiration / 1000;
+        }
+
+        public long getRefreshTokenExpirationInSeconds() {
+            return refreshTokenExpiration / 1000;
+        }
+
+        public long getAccessTokenExpirationInMinutes() {
+            return accessTokenExpiration / (1000 * 60);
+        }
+
+        public long getRefreshTokenExpirationInDays() {
+            return refreshTokenExpiration / (1000 * 60 * 60 * 24);
+        }
+    }
 }
