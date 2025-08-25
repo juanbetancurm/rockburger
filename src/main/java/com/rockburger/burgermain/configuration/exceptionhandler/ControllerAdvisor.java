@@ -176,5 +176,16 @@ public class ControllerAdvisor {
                         HttpStatus.INTERNAL_SERVER_ERROR.toString(),
                         LocalDateTime.now()));
     }
+    //Solution to the duplicate's problem:
+    @ExceptionHandler(DuplicateCartItemException.class)
+    public ResponseEntity<Map<String, Object>> handleDuplicateCartItemException(DuplicateCartItemException ex) {
+        Map<String, Object> errorResponse = new HashMap<>();
+        errorResponse.put("error", "DUPLICATE_ITEM");
+        errorResponse.put("message", "Item already exists in cart");
+        errorResponse.put("articleId", ex.getArticleId());
+        errorResponse.put("suggestion", "Use update quantity endpoint or remove item first");
+        errorResponse.put("timestamp", LocalDateTime.now());
+        return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
+    }
 
 }

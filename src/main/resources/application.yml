@@ -28,63 +28,66 @@ jwt:
   secret: "9qZgHlZ5Kg+POpcNp1YWlN5F/mkDoYysAaMAzvCydswRhE+tzLXytB/bNiU+NjPiCbKN7UZWFkgtw0wXSDYWQg=="  #WhileTesting
   expiration: 3600000 #60minsWhileTesting
 
+
 logging:
   level:
+    com.rockburger.burgermain.adapters.driven.feign: DEBUG
+    com.rockburger.burgermain.configuration.security: DEBUG
+    feign.Logger: DEBUG
     org.springframework.security: DEBUG
     com.rockburger.burgermain: DEBUG
     org.springframework.cloud.openfeign: DEBUG
     io.github.resilience4j: DEBUG
-
 ---
-resilience4j:
-  circuitbreaker:
-    configs:
-      default:
-        slidingWindowSize: 10
-        failureRateThreshold: 50
-        waitDurationInOpenState: 10000
-        permittedNumberOfCallsInHalfOpenState: 5
-        registerHealthIndicator: true
-        automaticTransitionFromOpenToHalfOpenEnabled: true
-    instances:
-      getActiveCart:
-        baseConfig: default
-      addItemToCart:
-        baseConfig: default
-      removeItemFromCart:
-        baseConfig: default
-      clearCart:
-        baseConfig: default
-  timelimiter:
-    configs:
-      default:
-        timeoutDuration: 3s
-        cancelRunningFuture: true
-    instances:
-      getActiveCart:
-        baseConfig: default
-      addItemToCart:
-        baseConfig: default
-      removeItemFromCart:
-        baseConfig: default
-      clearCart:
-        baseConfig: default
-  retry:
-    configs:
-      default:
-        maxAttempts: 3
-        waitDuration: 500ms
-        enableExponentialBackoff: true
-        exponentialBackoffMultiplier: 2
-    instances:
-      getActiveCart:
-        baseConfig: default
-      addItemToCart:
-        baseConfig: default
-      removeItemFromCart:
-        baseConfig: default
-      clearCart:
-        baseConfig: default
+#resilience4j:
+#  circuitbreaker:
+#    configs:
+#      default:
+#        slidingWindowSize: 10
+#        failureRateThreshold: 50
+#        waitDurationInOpenState: 10000
+#        permittedNumberOfCallsInHalfOpenState: 5
+#        registerHealthIndicator: true
+#        automaticTransitionFromOpenToHalfOpenEnabled: true
+#    instances:
+#      getActiveCart:
+#        baseConfig: default
+#      addItemToCart:
+#        baseConfig: default
+#      removeItemFromCart:
+#        baseConfig: default
+#      clearCart:
+#        baseConfig: default
+#  timelimiter:
+#    configs:
+#      default:
+#        timeoutDuration: 3s
+#        cancelRunningFuture: true
+#    instances:
+#      getActiveCart:
+#        baseConfig: default
+#      addItemToCart:
+#        baseConfig: default
+#      removeItemFromCart:
+#        baseConfig: default
+#      clearCart:
+#        baseConfig: default
+#  retry:
+#    configs:
+#      default:
+#        maxAttempts: 3
+#        waitDuration: 500ms
+#        enableExponentialBackoff: true
+#        exponentialBackoffMultiplier: 2
+#    instances:
+#      getActiveCart:
+#        baseConfig: default
+#      addItemToCart:
+#        baseConfig: default
+#      removeItemFromCart:
+#        baseConfig: default
+#      clearCart:
+#        baseConfig: default|
 
 ---
 spring:

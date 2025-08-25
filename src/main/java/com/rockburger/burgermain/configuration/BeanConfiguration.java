@@ -1,8 +1,8 @@
 package com.rockburger.burgermain.configuration;
 
+import com.rockburger.burgermain.adapters.driven.feign.dto.CartResponse;
 import com.rockburger.burgermain.adapters.driven.jpa.mysql.adapter.security.JwtAdapter;
 import com.rockburger.burgermain.adapters.driven.jpa.mysql.adapter.*;
-import com.rockburger.burgermain.adapters.driven.jpa.mysql.adapter.security.BCryptPasswordAdapter;
 import com.rockburger.burgermain.adapters.driven.jpa.mysql.mapper.*;
 import com.rockburger.burgermain.adapters.driven.jpa.mysql.repository.*;
 import com.rockburger.burgermain.adapters.driving.http.dto.request.AddSupplyRequest;
@@ -14,7 +14,7 @@ import com.rockburger.burgermain.domain.api.*;
 import com.rockburger.burgermain.domain.api.usecase.*;
 import com.rockburger.burgermain.domain.model.*;
 import com.rockburger.burgermain.domain.spi.*;
-import com.rockburger.burgermain.domain.spi.IPasswordEncryptionPort;
+import com.rockburger.burgermain.domain.spi.IPasswordPEncryptionPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,8 +22,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import com.rockburger.burgermain.domain.api.IJwtServicePort;
 
+import java.math.BigDecimal;
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 @Configuration
@@ -121,7 +121,7 @@ public class BeanConfiguration {
     @Bean
     public IUserServicePort userServicePort(
             IUserPersistencePort userPersistencePort,
-            IPasswordEncryptionPort passwordEncryptionPort) {
+            IPasswordPEncryptionPort passwordEncryptionPort) {
         return new UserUseCase(userPersistencePort, passwordEncryptionPort);
     }
     @Bean
@@ -158,7 +158,7 @@ public class BeanConfiguration {
      public IAuthenticationServicePort authenticationServicePort(
              IUserPersistencePort userPersistencePort,
              IJwtServicePort jwtServicePort,
-             IPasswordEncryptionPort passwordEncryptionPort) {
+             IPasswordPEncryptionPort passwordEncryptionPort) {
          return new AuthenticationUseCase(
                     userPersistencePort,
                     jwtServicePort,
@@ -248,7 +248,7 @@ public class BeanConfiguration {
     @Bean
     public IClientServicePort clientServicePort(
             IClientPersistencePort clientPersistencePort,
-            IPasswordEncryptionPort passwordEncryptionPort) {
+            IPasswordPEncryptionPort passwordEncryptionPort) {
         return new ClientUseCase(clientPersistencePort, passwordEncryptionPort);
     }
 
@@ -302,6 +302,49 @@ public class BeanConfiguration {
                 model.setItems(items);
 
                 return model;
+            }
+        };
+    }
+
+    @Bean
+    public ICartToOrderMapper cartToOrderMapper() {
+        return new ICartToOrderMapper() {
+            @Override
+            public OrderModel toOrderModel(CartResponse cartResponse, Long userId) {
+                if (cartResponse == null) {
+                    throw new IllegalArgumentException("Cart response cannot be null");
+                }
+                if (cartResponse.getItems() == null || cartResponse.getItems().isEmpty()) {
+                    throw new IllegalArgumentException("Cart items cannot be null or empty");
+                }
+                if (userId == null) {
+                    throw new IllegalArgumentException("User ID cannot be null");
+                }
+
+                OrderModel orderModel = new OrderModel();
+                orderModel.setUserId(userId);
+
+                // Convert cart items to order items
+                List<OrderItemModel> orderItems = cartResponse.getItems().stream()
+                        .map(cartItem -> {
+                            // Convert double price from cart to BigDecimal for order
+                            BigDecimal unitPrice = BigDecimal.valueOf(cartItem.getPrice());
+
+                            return new OrderItemModel(
+                                    cartItem.getArticleId(),
+                                    cartItem.getArticleName(),
+                                    cartItem.getQuantity(),
+                                    unitPrice
+                            );
+                        })
+                        .toList();
+
+                orderModel.setItems(orderItems);
+
+                // Convert cart total (double) to order total (BigDecimal)
+                orderModel.setTotalAmount(BigDecimal.valueOf(cartResponse.getTotal()));
+
+                return orderModel;
             }
         };
     }

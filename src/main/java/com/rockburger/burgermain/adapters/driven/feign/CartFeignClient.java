@@ -12,16 +12,16 @@ import org.springframework.web.bind.annotation.*;
 )
 public interface CartFeignClient {
     @GetMapping("/cart")
-    ResponseEntity<CartResponse> getActiveCart(@RequestHeader("Authorization") String authHeader);
+    ResponseEntity<CartResponse> getActiveCart();
 
     @PostMapping("/cart/items")
-    ResponseEntity<CartResponse> addItemToCart(@RequestHeader("Authorization") String authHeader, @RequestBody AddCartItemRequest request);
+    ResponseEntity<CartResponse> addItemToCart(@RequestBody AddCartItemRequest request);
 
     @DeleteMapping("/cart/items/{articleId}")
-    ResponseEntity<CartResponse> removeItemFromCart(@RequestHeader("Authorization") String authHeader, @PathVariable Long articleId);
+    ResponseEntity<CartResponse> removeItemFromCart(@PathVariable Long articleId);
 
     @DeleteMapping("/cart")
-    ResponseEntity<Void> clearCart(@RequestHeader("Authorization") String authHeader);
+    ResponseEntity<Void> clearCart();
 
     @GetMapping("/actuator/health")
     ResponseEntity<String> healthCheck();

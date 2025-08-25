@@ -3,7 +3,7 @@ package com.rockburger.burgermain.domain.api.usecase;
 import com.rockburger.burgermain.domain.api.IClientServicePort;
 import com.rockburger.burgermain.domain.exception.DuplicateUserException;
 import com.rockburger.burgermain.domain.model.ClientModel;
-import com.rockburger.burgermain.domain.spi.IPasswordEncryptionPort;
+import com.rockburger.burgermain.domain.spi.IPasswordPEncryptionPort;
 import com.rockburger.burgermain.domain.spi.IClientPersistencePort;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,10 +12,10 @@ public class ClientUseCase implements IClientServicePort {
     private static final Logger logger = LoggerFactory.getLogger(ClientUseCase.class);
 
     private final IClientPersistencePort clientPersistencePort;
-    private final IPasswordEncryptionPort passwordEncryptionPort;
+    private final IPasswordPEncryptionPort passwordEncryptionPort;
 
     public ClientUseCase(IClientPersistencePort clientPersistencePort,
-                         IPasswordEncryptionPort passwordEncryptionPort) {
+                         IPasswordPEncryptionPort passwordEncryptionPort) {
         this.clientPersistencePort = clientPersistencePort;
         this.passwordEncryptionPort = passwordEncryptionPort;
     }

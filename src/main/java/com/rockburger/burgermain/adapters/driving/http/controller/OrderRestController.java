@@ -1,13 +1,17 @@
 package com.rockburger.burgermain.adapters.driving.http.controller;
 
+import com.rockburger.burgermain.adapters.driven.feign.adapter.CartServiceAdapter;
+import com.rockburger.burgermain.adapters.driven.feign.dto.CartResponse;
 import com.rockburger.burgermain.adapters.driving.http.dto.request.CompleteOrderRequest;
 import com.rockburger.burgermain.adapters.driving.http.dto.response.OrderResponse;
 import com.rockburger.burgermain.adapters.driving.http.dto.response.ProductAvailabilityResponse;
 import com.rockburger.burgermain.adapters.driving.http.dto.response.SalesSummaryResponse;
+import com.rockburger.burgermain.adapters.driving.http.mapper.ICartToOrderMapper;
 import com.rockburger.burgermain.adapters.driving.http.mapper.IOrderRequestMapper;
 import com.rockburger.burgermain.adapters.driving.http.mapper.IOrderResponseMapper;
 import com.rockburger.burgermain.domain.api.IOrderServicePort;
 import com.rockburger.burgermain.domain.api.IArticleServicePort;
+import com.rockburger.burgermain.domain.exception.InsufficientStockException;
 import com.rockburger.burgermain.domain.model.ArticleModel;
 import com.rockburger.burgermain.domain.model.OrderModel;
 import com.rockburger.burgermain.domain.model.SalesSummaryModel;
@@ -31,6 +35,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/purchase")
@@ -43,17 +48,23 @@ public class OrderRestController {
     private final IOrderRequestMapper orderRequestMapper;
     private final IOrderResponseMapper orderResponseMapper;
     private final IUserPersistencePort userPersistencePort;
+    private final CartServiceAdapter cartServiceAdapter;
+    private final ICartToOrderMapper cartToOrderMapper;
 
     public OrderRestController(IOrderServicePort orderServicePort,
                                IArticleServicePort articleServicePort,
                                IOrderRequestMapper orderRequestMapper,
                                IOrderResponseMapper orderResponseMapper,
-                               IUserPersistencePort userPersistencePort) {
+                               IUserPersistencePort userPersistencePort,
+                               CartServiceAdapter cartServiceAdapter,
+                               ICartToOrderMapper cartToOrderMapper) {
         this.orderServicePort = orderServicePort;
         this.articleServicePort = articleServicePort;
         this.orderRequestMapper = orderRequestMapper;
         this.orderResponseMapper = orderResponseMapper;
         this.userPersistencePort = userPersistencePort;
+        this.cartServiceAdapter = cartServiceAdapter;
+        this.cartToOrderMapper = cartToOrderMapper;
     }
 
     @PostMapping("/complete")
@@ -88,6 +99,93 @@ public class OrderRestController {
         OrderResponse response = orderResponseMapper.toResponse(completedOrder);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @PostMapping("/checkout")
+    @PreAuthorize("hasRole('auxiliar')")
+    @Operation(
+            summary = "Checkout cart",
+            description = "Processes customer cart as a complete order with automatic cart clearing",
+            responses = {
+                    @ApiResponse(responseCode = "201", description = "Cart checkout completed successfully",
+                            content = @Content(schema = @Schema(implementation = OrderResponse.class))),
+                    @ApiResponse(responseCode = "400", description = "Cart is empty"),
+                    @ApiResponse(responseCode = "403", description = "Access denied - only auxiliars can process orders"),
+                    @ApiResponse(responseCode = "409", description = "Insufficient stock for one or more items"),
+                    @ApiResponse(responseCode = "500", description = "Internal server error")
+            }
+    )
+    public ResponseEntity<?> checkout(@AuthenticationPrincipal UserDetails userDetails) {
+        logger.info("Starting checkout process for user: {}", userDetails.getUsername());
+
+        try {
+            // Get user from authentication
+            UserModel user = userPersistencePort.findByEmail(userDetails.getUsername())
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+
+            // Fetch active cart
+            logger.debug("Fetching active cart from cart service");
+            CartResponse cartResponse = cartServiceAdapter.getActiveCart();
+
+            // Validate cart is not empty (AC3: Empty Cart Handling)
+            if (cartResponse.getItems() == null || cartResponse.getItems().isEmpty()) {
+                logger.warn("Attempted checkout with empty cart for user: {}", userDetails.getUsername());
+                return ResponseEntity.badRequest().body(Map.of(
+                        "error", "CART_EMPTY",
+                        "message", "Cannot checkout: cart is empty",
+                        "timestamp", java.time.LocalDateTime.now()
+                ));
+            }
+
+            logger.info("Processing checkout for cart with {} items", cartResponse.getItems().size());
+
+            // Convert cart to order model
+            OrderModel orderModel = cartToOrderMapper.toOrderModel(cartResponse, user.getId());
+
+            // Complete the purchase (this handles stock validation and inventory updates)
+            OrderModel completedOrder = orderServicePort.completePurchase(orderModel);
+            logger.info("Order created successfully with ID: {}", completedOrder.getId());
+
+            // Clear cart after successful order (AC1: Checkout Endpoint Implementation)
+            try {
+                cartServiceAdapter.clearCart();
+                logger.info("Cart cleared successfully after order completion");
+            } catch (Exception cartClearException) {
+                // AC6: Error Recovery - Order should still be created successfully
+                logger.warn("Warning: Failed to clear cart after successful order creation. Order ID: {}, Error: {}",
+                        completedOrder.getId(), cartClearException.getMessage());
+            }
+
+            // Convert to response
+            OrderResponse response = orderResponseMapper.toResponse(completedOrder);
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+
+        } catch (InsufficientStockException e) {
+            // AC2: Business Rules Validation - Handle insufficient stock
+            logger.warn("Insufficient stock during checkout: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of(
+                    "error", "INSUFFICIENT_STOCK",
+                    "message", e.getMessage(),
+                    "timestamp", java.time.LocalDateTime.now()
+            ));
+        } catch (IllegalArgumentException e) {
+            // Handle validation errors
+            logger.error("Validation error during checkout: {}", e.getMessage());
+            return ResponseEntity.badRequest().body(Map.of(
+                    "error", "VALIDATION_ERROR",
+                    "message", e.getMessage(),
+                    "timestamp", java.time.LocalDateTime.now()
+            ));
+        } catch (Exception e) {
+            // AC4: Transaction Integrity - Proper error response should be returned
+            logger.error("Error during checkout process: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
+                    "error", "INTERNAL_SERVER_ERROR",
+                    "message", "An error occurred during checkout: " + e.getMessage(),
+                    "timestamp", java.time.LocalDateTime.now()
+            ));
+        }
     }
 
     @GetMapping("/availability")

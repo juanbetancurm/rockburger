@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -38,15 +39,34 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
+
+        String requestURI = request.getRequestURI();
+        String authHeader = request.getHeader("Authorization");
+
+        // ADD THIS LOGGING BLOCK
+        logger.info("=== JWT FILTER DEBUG - REQUEST: {} ===", requestURI);
+        logger.info("Authorization header present: {}", authHeader != null);
+        if (authHeader != null) {
+            logger.info("Authorization header length: {}", authHeader.length());
+            logger.info("Authorization header starts with 'Bearer ': {}", authHeader.startsWith("Bearer "));
+        }
+
         try {
             String jwt = extractJwtFromRequest(request);
             logger.debug("Processing request to '{}' with JWT: {}", request.getRequestURI(),
                     jwt != null ? "present" : "not present");
 
             if (jwt != null) {
+                // ADD THIS LOG
+                logger.info("Extracted JWT token length: {}", jwt.length());
+                logger.info("JWT starts with 'eyJ': {}", jwt.startsWith("eyJ"));
+
                 // Validate JWT token and get user information
                 UserModel user = jwtServicePort.validateAndGetUserFromToken(jwt);
                 logger.debug("User authenticated with role: {}", user.getRole());
+
+                // ADD THIS LOG
+                logger.info("Successfully validated JWT and extracted user: {}", user.getEmail());
 
                 UserDetails userDetails = userDetailsService.loadUserByUsername(user.getEmail());
                 logger.debug("UserDetails loaded with authorities: {}", userDetails.getAuthorities());
@@ -62,11 +82,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
                 logger.debug("Set authentication in SecurityContext with token");
+
+                // ADD THIS VERIFICATION LOG
+                Authentication savedAuth = SecurityContextHolder.getContext().getAuthentication();
+                logger.info("✅ Authentication saved with credentials type: {}",
+                        savedAuth.getCredentials() != null ? savedAuth.getCredentials().getClass().getSimpleName() : "null");
+                logger.info("✅ Credentials is String: {}", savedAuth.getCredentials() instanceof String);
             }
         } catch (Exception e) {
             logger.error("Cannot set user authentication: {}", e.getMessage());
         }
-
+        logger.info("=== END JWT FILTER DEBUG ===");
         filterChain.doFilter(request, response);
     }
 

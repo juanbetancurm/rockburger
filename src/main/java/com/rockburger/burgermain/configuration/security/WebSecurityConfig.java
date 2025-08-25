@@ -4,8 +4,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import com.rockburger.burgermain.adapters.driven.jpa.mysql.adapter.security.BCryptPasswordAdapter;
-import com.rockburger.burgermain.domain.spi.IPasswordEncryptionPort;
+import com.rockburger.burgermain.adapters.driven.jpa.mysql.adapter.security.BCryptPasswordAdapterP;
+import com.rockburger.burgermain.domain.spi.IPasswordPEncryptionPort;
 
 @Configuration
 public class WebSecurityConfig {
@@ -21,7 +21,7 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    public IPasswordEncryptionPort passwordEncryptionPort(BCryptPasswordEncoder passwordEncoder) {
-        return new BCryptPasswordAdapter(passwordEncoder);
+    public IPasswordPEncryptionPort passwordEncryptionPort(BCryptPasswordEncoder passwordEncoder) {
+        return new BCryptPasswordAdapterP(passwordEncoder);
     }
 }

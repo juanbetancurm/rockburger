@@ -3,6 +3,7 @@ package com.rockburger.burgermain.adapters.driving.http.controller;
 import com.rockburger.burgermain.adapters.driven.feign.dto.CartResponse;
 import com.rockburger.burgermain.adapters.driven.feign.facade.CartFacadeService;
 import com.rockburger.burgermain.domain.api.IArticleServicePort;
+import com.rockburger.burgermain.domain.exception.DuplicateCartItemException;
 import com.rockburger.burgermain.domain.model.ArticleModel;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -10,8 +11,11 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -40,15 +44,54 @@ public class ShoppingCartController {
             @PathVariable Long articleId,
             @RequestParam(defaultValue = "1") int quantity) {
 
+        // ADD THIS LOGGING BLOCK
+        logger.info("=== SHOPPING CART CONTROLLER DEBUG ===");
         logger.info("Adding article {} to cart, quantity: {}", articleId, quantity);
+        logger.info("Thread ID: {}", Thread.currentThread().getId());
+        logger.info("Thread Name: {}", Thread.currentThread().getName());
 
-        // Get the article details
-        ArticleModel article = articleServicePort.getArticleById(articleId);
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        logger.info("SecurityContext has authentication: {}", auth != null);
+        if (auth != null) {
+            logger.info("Auth credentials available: {}", auth.getCredentials() != null);
+            logger.info("Auth credentials is String: {}", auth.getCredentials() instanceof String);
+            if (auth.getCredentials() instanceof String) {
+                String token = (String) auth.getCredentials();
+                logger.info("Token length: {}, starts with eyJ: {}", token.length(), token.startsWith("eyJ"));
+            }
+        }
+        logger.info("=== END SHOPPING CART CONTROLLER DEBUG ===");
 
-        // Add to cart
-        CartResponse cart = cartFacadeService.addArticleToCart(article, quantity);
+        try {
+            // Get the article details
+            ArticleModel article = articleServicePort.getArticleById(articleId);
 
-        return ResponseEntity.ok(cart);
+            // Add to cart
+            CartResponse cart = cartFacadeService.addArticleToCart(article, quantity);
+
+            return ResponseEntity.ok(cart);
+
+        } catch (DuplicateCartItemException e) {
+            // Handle duplicate item gracefully
+            logger.info("Handling duplicate item for articleId: {}", e.getArticleId());
+
+            // Return current cart state with a warning header
+            try {
+                CartResponse currentCart = cartFacadeService.getActiveCart();
+
+                // Add custom header to indicate the item already exists
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .header("X-Cart-Warning", "Item already exists in cart")
+                        .header("X-Duplicate-Article-Id", String.valueOf(e.getArticleId()))
+                        .body(currentCart);
+
+            } catch (Exception fallbackEx) {
+                logger.error("Failed to get current cart after duplicate detection: {}", fallbackEx.getMessage());
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .header("X-Cart-Warning", "Item already exists in cart")
+                        .build();
+            }
+        }
     }
 
     @DeleteMapping("/items/{articleId}")

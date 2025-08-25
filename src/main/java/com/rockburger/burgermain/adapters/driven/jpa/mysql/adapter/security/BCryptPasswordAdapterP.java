@@ -2,16 +2,16 @@ package com.rockburger.burgermain.adapters.driven.jpa.mysql.adapter.security;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
-import com.rockburger.burgermain.domain.spi.IPasswordEncryptionPort;
+import com.rockburger.burgermain.domain.spi.IPasswordPEncryptionPort;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Component
-public class BCryptPasswordAdapter implements IPasswordEncryptionPort {
-    private static final Logger logger = LoggerFactory.getLogger(BCryptPasswordAdapter.class);
+public class BCryptPasswordAdapterP implements IPasswordPEncryptionPort {
+    private static final Logger logger = LoggerFactory.getLogger(BCryptPasswordAdapterP.class);
     private final BCryptPasswordEncoder passwordEncoder;
 
-    public BCryptPasswordAdapter(BCryptPasswordEncoder passwordEncoder) {
+    public BCryptPasswordAdapterP(BCryptPasswordEncoder passwordEncoder) {
         this.passwordEncoder = passwordEncoder;
     }
 
